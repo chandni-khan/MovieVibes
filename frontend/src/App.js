@@ -1,25 +1,77 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import { Container } from "react-bootstrap";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import MoviesList from "./components/MoviesList";
+import MovieDetail from "./components/MoviesDetails";
+import AppNavbar from "./components/AppNavbar";
+import ManageMovies from "./components/MangeMovies";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
 }
 
-export default App;
+function ProtectedAdminRoute({ children }) {
+  const token = localStorage.getItem("token");
+  const role = JSON.parse(localStorage.getItem("role")); // Assuming user data is stored
+
+  if (!token || role !== 1) {
+    return <Navigate to="/movies" replace />;
+  }
+
+  return children;
+}
+
+export default function App() {
+  return (
+    <Router>
+      <AppNavbar />
+      <Container style={{ marginTop: "3rem" }}>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Protected Routes */}
+          <Route
+            path="/movies"
+            element={
+              <ProtectedRoute>
+                <MoviesList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/movies/:id"
+            element={
+              <ProtectedRoute>
+                <MovieDetail />
+              </ProtectedRoute>
+            }
+          />
+
+         {/* Admin-Only Route for Movies CRUD */}
+          <Route
+            path="/admin/movies"
+            element={
+              <ProtectedAdminRoute>
+                <ManageMovies />
+              </ProtectedAdminRoute>
+            }
+          />
+        </Routes>
+      </Container>
+    </Router>
+  );
+}
