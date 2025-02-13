@@ -126,7 +126,7 @@ JWT_SECRET=your_secret_key
 - `DELETE /api/reviews/:id` - Delete a review
 
 ### Admin Routes (Require Admin Role):
--`you have to revoke admin permission by changing user role to 1 in DB only, Database admin can do that
+ # You have to revoke admin permission by changing user role to 1 in DB only, Database admin can do that
 - `POST /api/movies` - Add a new movie
 - `PUT /api/movies/:id` - Update movie details
 - `DELETE /api/movies/:id` - Delete a movie
